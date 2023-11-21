@@ -8,6 +8,7 @@ import fuzs.shatteredsouls.config.ClientConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -52,9 +53,9 @@ public class MobDismembermentHandler {
             motionZ += Math.sin(var5) * (double) multiplier;
 
             Vec3 deltaMovement = entity.getDeltaMovement();
-            if (entity.getMobType() != MobType.UNDEAD || entity instanceof Zombie) {
+            if (!entity.getType().is(EntityTypeTags.SKELETONS)) {
                 Particle particle = ClientParticleTypes.INSTANCE.createParticle(BloodParticle.BLOOD_PARTICLE_TYPE, entity.getX(), entity.getY() + 0.5D + (entity.getRandom().nextDouble() * 0.7D), entity.getZ(), deltaMovement.x + motionX, deltaMovement.y + motionY, deltaMovement.z + motionZ);
-                if (particle != null && entity instanceof Zombie) {
+                if (particle != null && entity.getMobType() == MobType.UNDEAD) {
                     particle.setColor(1.0F, 1.0F, 0.0F);
                 }
             }
