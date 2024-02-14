@@ -1,8 +1,7 @@
-package fuzs.shatteredsouls;
+package fuzs.shatteredsouls.forge;
 
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
-import fuzs.puzzleslib.api.data.v2.core.DataProviderHelper;
-import fuzs.shatteredsouls.data.client.ModParticleDescriptionProvider;
+import fuzs.shatteredsouls.ShatteredSouls;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
@@ -14,6 +13,5 @@ public class ShatteredSoulsForge {
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
         ModConstructor.construct(ShatteredSouls.MOD_ID, ShatteredSouls::new);
-        DataProviderHelper.registerDataProviders(ShatteredSouls.MOD_ID, ModParticleDescriptionProvider::new);
     }
 }

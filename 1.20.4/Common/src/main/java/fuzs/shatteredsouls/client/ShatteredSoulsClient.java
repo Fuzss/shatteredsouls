@@ -2,10 +2,10 @@ package fuzs.shatteredsouls.client;
 
 import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
 import fuzs.puzzleslib.api.client.core.v1.context.ParticleProvidersContext;
-import fuzs.puzzleslib.api.client.event.v1.RenderLivingEvents;
+import fuzs.puzzleslib.api.client.event.v1.renderer.RenderLivingEvents;
 import fuzs.puzzleslib.api.core.v1.ContentRegistrationFlags;
 import fuzs.puzzleslib.api.event.v1.entity.living.LivingDeathCallback;
-import fuzs.puzzleslib.api.event.v1.entity.living.LivingEvents;
+import fuzs.puzzleslib.api.event.v1.entity.living.LivingTickCallback;
 import fuzs.shatteredsouls.client.handler.MobDismembermentHandler;
 import fuzs.shatteredsouls.client.handler.ShatterRenderHandler;
 import fuzs.shatteredsouls.client.handler.ShatterTickHandler;
@@ -20,7 +20,7 @@ public class ShatteredSoulsClient implements ClientModConstructor {
 
     private static void registerHandlers() {
         LivingDeathCallback.EVENT.register(ShatterTickHandler::onLivingDeath);
-        LivingEvents.TICK.register(ShatterTickHandler::onLivingTick);
+        LivingTickCallback.EVENT.register(ShatterTickHandler::onLivingTick);
         RenderLivingEvents.BEFORE.register(ShatterRenderHandler::onBeforeRenderEntity);
         LivingDeathCallback.EVENT.register(MobDismembermentHandler::onLivingDeath);
     }

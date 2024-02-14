@@ -1,14 +1,15 @@
-package fuzs.shatteredsouls.client;
+package fuzs.shatteredsouls.neoforge.client;
 
 import fuzs.shatteredsouls.ShatteredSouls;
 import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
+import fuzs.shatteredsouls.client.ShatteredSoulsClient;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 
 @Mod.EventBusSubscriber(modid = ShatteredSouls.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public class ShatteredSoulsForgeClient {
+public class ShatteredSoulsNeoForgeClient {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
