@@ -13,8 +13,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.phys.Vec3;
 
 public class MobDismembermentHandler {
@@ -55,7 +53,7 @@ public class MobDismembermentHandler {
             Vec3 deltaMovement = entity.getDeltaMovement();
             if (!entity.getType().is(EntityTypeTags.SKELETONS)) {
                 Particle particle = ClientParticleTypes.INSTANCE.createParticle(BloodParticle.BLOOD_PARTICLE_TYPE, entity.getX(), entity.getY() + 0.5D + (entity.getRandom().nextDouble() * 0.7D), entity.getZ(), deltaMovement.x + motionX, deltaMovement.y + motionY, deltaMovement.z + motionZ);
-                if (particle != null && entity.getMobType() == MobType.UNDEAD) {
+                if (particle != null && entity.getType().is(EntityTypeTags.UNDEAD)) {
                     particle.setColor(1.0F, 1.0F, 0.0F);
                 }
             }

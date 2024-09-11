@@ -6,6 +6,7 @@ import fuzs.shatteredsouls.client.helper.ClientEntityData;
 import fuzs.shatteredsouls.config.ClientConfig;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.Vec3;
@@ -35,21 +36,21 @@ public class ShatterTickHandler {
         return EventResult.PASS;
     }
 
-    public static EventResult onLivingTick(LivingEntity entity) {
+    public static EventResult onStartEntityTick(Entity entity) {
 
-        if (!entity.level().isClientSide || !entity.isDeadOrDying() || ShatteredSouls.CONFIG.get(ClientConfig.class).shatterAnimationBlacklist.contains(entity.getType())) {
+        if (!entity.level().isClientSide || !(entity instanceof LivingEntity livingEntity) || !livingEntity.isDeadOrDying() || ShatteredSouls.CONFIG.get(ClientConfig.class).shatterAnimationBlacklist.contains(entity.getType())) {
             return EventResult.PASS;
         }
 
-        if (entity.deathTime >= SHATTER_DEATH_TIME) {
+        if (livingEntity.deathTime >= SHATTER_DEATH_TIME) {
 
             // we are done with the entity, now remove it properly from the world
-            ClientEntityData.clearEntity(entity);
+            ClientEntityData.clearEntity(livingEntity);
 
             return EventResult.INTERRUPT;
         } else {
 
-            Vec3 deltaMovement = ClientEntityData.getAndUpdateDeltaMovement(entity).multiply(DELTA_MOVEMENT_SCALE);
+            Vec3 deltaMovement = ClientEntityData.getAndUpdateDeltaMovement(livingEntity).multiply(DELTA_MOVEMENT_SCALE);
 
             // just set this, should relate to rendering, but does not seem to have any noticeable effect, but just keep it for now
             entity.xo = entity.getX();
@@ -58,10 +59,10 @@ public class ShatterTickHandler {
 
             // while the delay is not reached allow vanilla to continue ticking the entity,
             // so it can properly reach the actual death position client-side (or at least get closer)
-            if (entity.deathTime >= NOT_ON_GROUND_DELAY) {
+            if (livingEntity.deathTime >= NOT_ON_GROUND_DELAY) {
 
                 // we need to advance the death time ourselves now as vanilla tick is no longer running
-                entity.deathTime++;
+                livingEntity.deathTime++;
                 entity.move(MoverType.SELF, deltaMovement);
 
                 return EventResult.INTERRUPT;

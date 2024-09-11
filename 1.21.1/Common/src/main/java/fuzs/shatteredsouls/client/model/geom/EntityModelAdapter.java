@@ -14,6 +14,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -73,7 +74,8 @@ public class EntityModelAdapter {
 
             ModelPart modelPart = parts[i];
             modelPart.translateAndRotate(poseStack);
-            ModelPartAccessor.class.cast(modelPart).shatteredsouls$callCompile(poseStack.last(), vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
+            int color = FastColor.ARGB32.colorFromFloat(alpha, 1.0F, 1.0F, 1.0F);
+            ModelPartAccessor.class.cast(modelPart).shatteredsouls$callCompile(poseStack.last(), vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, color);
 
             poseStack.popPose();
         }

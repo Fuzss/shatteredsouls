@@ -16,5 +16,5 @@ public interface ModelPartAccessor {
     Map<String, ModelPart> shatteredsouls$getChildren();
 
     @Invoker("compile")
-    void shatteredsouls$callCompile(PoseStack.Pose pose, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha);
+    void shatteredsouls$callCompile(PoseStack.Pose pose, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color);
 }
