@@ -1,13 +1,10 @@
 package fuzs.shatteredsouls.client.particle;
 
-import fuzs.shatteredsouls.ShatteredSouls;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.resources.ResourceLocation;
 
 public class BloodParticle extends TextureSheetParticle {
-    public static final ResourceLocation BLOOD_PARTICLE_TYPE = ShatteredSouls.id("blood");
 
     public BloodParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed);
