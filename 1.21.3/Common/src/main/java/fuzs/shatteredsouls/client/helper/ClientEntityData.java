@@ -1,7 +1,7 @@
 package fuzs.shatteredsouls.client.helper;
 
-import com.google.common.collect.MapMaker;
 import fuzs.shatteredsouls.client.handler.ShatterTickHandler;
+import fuzs.shatteredsouls.init.ModRegistry;
 import fuzs.shatteredsouls.mixin.client.accessor.EntityAccessor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,11 +9,7 @@ import net.minecraft.world.level.entity.EntityInLevelCallback;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-
 public final class ClientEntityData {
-    private static final Map<LivingEntity, ClientEntityData> CLIENT_ENTITY_DATA = new MapMaker().concurrencyLevel(1).weakKeys().makeMap();
-
     private final EntityInLevelCallback callback;
     private Vec3 deltaMovement;
 
@@ -47,7 +43,7 @@ public final class ClientEntityData {
 
     public static void submitEntity(LivingEntity entity) {
         // we replace the client-side level callback to be able to keep the entity in the world longer than vanilla would
-        // (our death animation takes 100 ticks to play, while vanilla removes death entities after 20 ticks)
+        // (our death animation takes 100 ticks to play, while vanilla removes dead entities after 20 ticks)
         EntityInLevelCallback callback = ((EntityAccessor) entity).shatteredsouls$getLevelCallback();
         // the replacement callback deletes the removal reason from an entity when called, which is important,
         // as the removal reason is set right before the level callback is invoked, but independently of it.
@@ -56,16 +52,20 @@ public final class ClientEntityData {
         RemovalReasonHoldingNullCallback newCallback = new RemovalReasonHoldingNullCallback(entity, callback);
         entity.setLevelCallback(newCallback);
         EntityInLevelCallback forwardingCallback = new ForwardingEntityInLevelCallback(callback, newCallback);
-        CLIENT_ENTITY_DATA.put(entity, new ClientEntityData(forwardingCallback, entity.getDeltaMovement()));
+        ModRegistry.CLIENT_DATA_ATTACHMENT_TYPE.set(entity,
+                new ClientEntityData(forwardingCallback, entity.getDeltaMovement()));
     }
 
     public static void clearEntity(LivingEntity entity) {
-        ClientEntityData clientEntityData = CLIENT_ENTITY_DATA.remove(entity);
-        if (clientEntityData != null) clientEntityData.getCallback().onRemove(entity.getRemovalReason());
+        ClientEntityData clientEntityData = ModRegistry.CLIENT_DATA_ATTACHMENT_TYPE.get(entity);
+        if (clientEntityData != null) {
+            clientEntityData.getCallback().onRemove(entity.getRemovalReason());
+            ModRegistry.CLIENT_DATA_ATTACHMENT_TYPE.set(entity, null);
+        }
     }
 
     public static Vec3 getAndUpdateDeltaMovement(LivingEntity entity) {
-        ClientEntityData clientEntityData = CLIENT_ENTITY_DATA.get(entity);
+        ClientEntityData clientEntityData = ModRegistry.CLIENT_DATA_ATTACHMENT_TYPE.get(entity);
         if (clientEntityData != null) {
             return clientEntityData.getAndUpdateDeltaMovement(entity.getDeltaMovement());
         } else {
@@ -74,7 +74,7 @@ public final class ClientEntityData {
     }
 
     public static Vec3 getDeltaMovement(LivingEntity entity) {
-        ClientEntityData clientEntityData = CLIENT_ENTITY_DATA.get(entity);
+        ClientEntityData clientEntityData = ModRegistry.CLIENT_DATA_ATTACHMENT_TYPE.get(entity);
         if (clientEntityData != null) {
             return clientEntityData.getDeltaMovement().multiply(ShatterTickHandler.DELTA_MOVEMENT_SCALE);
         } else {

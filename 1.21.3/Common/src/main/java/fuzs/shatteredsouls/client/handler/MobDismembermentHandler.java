@@ -1,6 +1,6 @@
 package fuzs.shatteredsouls.client.handler;
 
-import fuzs.puzzleslib.api.client.particle.v1.ClientParticleHelper;
+import fuzs.puzzleslib.api.client.util.v1.ClientParticleHelper;
 import fuzs.puzzleslib.api.event.v1.core.EventResult;
 import fuzs.shatteredsouls.ShatteredSouls;
 import fuzs.shatteredsouls.config.ClientConfig;
@@ -21,8 +21,8 @@ public class MobDismembermentHandler {
 
         if (!ShatteredSouls.CONFIG.get(ClientConfig.class).bloodParticles) return EventResult.PASS;
 
-        if (!entity.level().isClientSide || ShatteredSouls.CONFIG.get(
-                ClientConfig.class).bloodParticleBlacklist.contains(entity.getType())) {
+        if (!entity.level().isClientSide ||
+                ShatteredSouls.CONFIG.get(ClientConfig.class).bloodParticleBlacklist.contains(entity.getType())) {
             return EventResult.PASS;
         }
 
@@ -39,10 +39,10 @@ public class MobDismembermentHandler {
         for (int k = 0; k < particleAmount + level.random.nextInt(particleAmount); k++) {
 
             float multiplier = 0.3F;
-            double motionX = -Mth.sin(entity.yBodyRotO / 180.0F * (float) Math.PI) * Mth.cos(
-                    entity.xRotO / 180.0F * (float) Math.PI) * multiplier;
-            double motionZ = Mth.cos(entity.yBodyRotO / 180.0F * (float) Math.PI) * Mth.cos(
-                    entity.xRotO / 180.0F * (float) Math.PI) * multiplier;
+            double motionX = -Mth.sin(entity.yBodyRotO / 180.0F * (float) Math.PI) *
+                    Mth.cos(entity.xRotO / 180.0F * (float) Math.PI) * multiplier;
+            double motionZ = Mth.cos(entity.yBodyRotO / 180.0F * (float) Math.PI) *
+                    Mth.cos(entity.xRotO / 180.0F * (float) Math.PI) * multiplier;
             double motionY = -Mth.sin(entity.xRotO / 180.0F * (float) Math.PI) * multiplier + 0.1F;
 
             multiplier = 0.02F;
@@ -55,10 +55,14 @@ public class MobDismembermentHandler {
 
             Vec3 deltaMovement = entity.getDeltaMovement();
             if (!entity.getType().is(EntityTypeTags.SKELETONS)) {
-                Particle particle = ClientParticleHelper.addParticle(level, ModRegistry.BLOOD_PARTICLE_TYPE.value(),
-                        entity.getX(), entity.getY() + 0.5D + (entity.getRandom().nextDouble() * 0.7D), entity.getZ(),
-                        deltaMovement.x + motionX, deltaMovement.y + motionY, deltaMovement.z + motionZ
-                );
+                Particle particle = ClientParticleHelper.addParticle(level,
+                        ModRegistry.BLOOD_PARTICLE_TYPE.value(),
+                        entity.getX(),
+                        entity.getY() + 0.5D + (entity.getRandom().nextDouble() * 0.7D),
+                        entity.getZ(),
+                        deltaMovement.x + motionX,
+                        deltaMovement.y + motionY,
+                        deltaMovement.z + motionZ);
                 if (particle != null && entity.getType().is(EntityTypeTags.UNDEAD)) {
                     particle.setColor(1.0F, 1.0F, 0.0F);
                 }

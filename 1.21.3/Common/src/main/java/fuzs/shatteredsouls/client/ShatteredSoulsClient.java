@@ -2,6 +2,7 @@ package fuzs.shatteredsouls.client;
 
 import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
 import fuzs.puzzleslib.api.client.core.v1.context.ParticleProvidersContext;
+import fuzs.puzzleslib.api.client.event.v1.renderer.ExtractRenderStateCallbackV2;
 import fuzs.puzzleslib.api.client.event.v1.renderer.RenderLivingEvents;
 import fuzs.puzzleslib.api.event.v1.entity.EntityTickEvents;
 import fuzs.puzzleslib.api.event.v1.entity.living.LivingDeathCallback;
@@ -23,6 +24,7 @@ public class ShatteredSoulsClient implements ClientModConstructor {
         EntityTickEvents.START.register(ShatterTickHandler::onStartEntityTick);
         RenderLivingEvents.BEFORE.register(ShatterRenderHandler::onBeforeRenderEntity);
         LivingDeathCallback.EVENT.register(MobDismembermentHandler::onLivingDeath);
+        ExtractRenderStateCallbackV2.EVENT.register(ShatterRenderHandler::onExtractRenderState);
     }
 
     @Override

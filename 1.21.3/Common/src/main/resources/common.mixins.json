@@ -6,7 +6,7 @@
   "mixins": [
   ],
   "client": [
-    "client.accessor.AgeableListModelAccessor",
+    "client.accessor.AgeableMobRendererAccessor",
     "client.accessor.EntityAccessor",
     "client.accessor.LivingEntityRendererAccessor",
     "client.accessor.ModelPartAccessor"

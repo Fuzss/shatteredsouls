@@ -26,9 +26,9 @@ public class ShatterTickHandler {
         // to hopefully have it reach the actual death position client-side to allow the death animation to play there.
         // this mainly solves an issue with mobs dying from fall damage, where the mob is already dead, but is still falling on the client,
         // resulting in the mob stopping and playing the death animation in the air above the actual death position.
-        entity.deathTime = entity.onGround() || BuiltInRegistries.FLUID.getTagNames().anyMatch(fluid -> entity.getFluidHeight(fluid) > 0.0) ? NOT_ON_GROUND_DELAY : 0;
+        entity.deathTime = entity.onGround() || BuiltInRegistries.FLUID.listTagIds().anyMatch(fluid -> entity.getFluidHeight(fluid) > 0.0) ? NOT_ON_GROUND_DELAY : 0;
 
-        // enable no physics so the death animation is not hindered by terrain
+        // enable no physics, so the death animation is not hindered by terrain
         entity.noPhysics = true;
 
         ClientEntityData.submitEntity(entity);
