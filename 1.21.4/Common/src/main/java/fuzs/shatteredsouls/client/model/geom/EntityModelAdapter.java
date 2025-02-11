@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import fuzs.puzzleslib.api.client.util.v1.RenderPropertyKey;
+import fuzs.puzzleslib.api.client.renderer.v1.RenderPropertyKey;
 import fuzs.shatteredsouls.client.handler.ShatterRenderHandler;
 import fuzs.shatteredsouls.mixin.client.accessor.ModelPartAccessor;
 import net.minecraft.client.model.EntityModel;
