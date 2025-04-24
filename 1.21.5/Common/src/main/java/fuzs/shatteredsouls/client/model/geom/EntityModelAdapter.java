@@ -54,10 +54,12 @@ public class EntityModelAdapter {
     protected static void setupAndRenderModelParts(Collection<ModelPart> modelParts, LivingEntityRenderState entityRenderState, PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, float animationProgress) {
 
         ModelPart[] parts = explodeModelParts(modelParts).toArray(ModelPart[]::new);
-        Vec3 deltaMovement = RenderPropertyKey.getRenderProperty(entityRenderState,
-                ShatterRenderHandler.DELTA_MOVEMENT_RENDER_PROPERTY_KEY);
-        int entityId = RenderPropertyKey.getRenderProperty(entityRenderState,
-                ShatterRenderHandler.ENTITY_ID_RENDER_PROPERTY_KEY);
+        Vec3 deltaMovement = RenderPropertyKey.getOrDefault(entityRenderState,
+                ShatterRenderHandler.DELTA_MOVEMENT_RENDER_PROPERTY_KEY,
+                Vec3.ZERO);
+        int entityId = RenderPropertyKey.getOrDefault(entityRenderState,
+                ShatterRenderHandler.ENTITY_ID_RENDER_PROPERTY_KEY,
+                0);
         float alpha = 1.0F - animationProgress;
         RandomSource random = RANDOM;
 

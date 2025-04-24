@@ -45,29 +45,25 @@ public class ShatterRenderHandler {
         if (entity instanceof LivingEntity livingEntity && livingEntity.isDeadOrDying() &&
                 !ShatteredSouls.CONFIG.get(ClientConfig.class).shatterAnimationBlacklist.contains(entity.getType())) {
             // vanilla is very aggressive with syncing those shared flags, so we set them during rendering since they are used right after the entity is rendered
-            // fire flag prevents rendering the fire overlay, mainly useful for undead mobs burning in the sun
+            // the fire flag prevents rendering the fire overlay, mainly useful for undead mobs burning in the sun
             entityRenderState.displayFireAnimation = false;
-            // invisibility flag prevents the mob shadow from rendering which is not desired for the death animation
+            // the invisibility flag prevents the mob shadow from rendering, which is not desired for the death animation
             // unfortunately the entity hitbox (F3+B) also no longer renders, but that's how it is
             entityRenderState.isInvisible = true;
-            RenderPropertyKey.setRenderProperty(entityRenderState,
-                    SHATTER_ANIMATION_RENDER_PROPERTY_KEY,
-                    Unit.INSTANCE);
-            RenderPropertyKey.setRenderProperty(entityRenderState,
+            RenderPropertyKey.set(entityRenderState, SHATTER_ANIMATION_RENDER_PROPERTY_KEY, Unit.INSTANCE);
+            RenderPropertyKey.set(entityRenderState,
                     DELTA_MOVEMENT_RENDER_PROPERTY_KEY,
                     ClientEntityData.getDeltaMovement(livingEntity));
-            RenderPropertyKey.setRenderProperty(entityRenderState, ENTITY_ID_RENDER_PROPERTY_KEY, livingEntity.getId());
+            RenderPropertyKey.set(entityRenderState, ENTITY_ID_RENDER_PROPERTY_KEY, livingEntity.getId());
             // do not lerp this value to prevent flickering
-            RenderPropertyKey.setRenderProperty(entityRenderState,
-                    BODY_ROT_RENDER_PROPERTY_KEY,
-                    livingEntity.yBodyRotO);
+            RenderPropertyKey.set(entityRenderState, BODY_ROT_RENDER_PROPERTY_KEY, livingEntity.yBodyRotO);
         }
     }
 
     @SuppressWarnings("unchecked")
     public static <T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>> EventResult onBeforeRenderEntity(S entityRenderState, LivingEntityRenderer<T, S, M> entityRenderer, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
 
-        if (!RenderPropertyKey.containsRenderProperty(entityRenderState, SHATTER_ANIMATION_RENDER_PROPERTY_KEY)) {
+        if (!RenderPropertyKey.has(entityRenderState, SHATTER_ANIMATION_RENDER_PROPERTY_KEY)) {
             return EventResult.PASS;
         }
 
@@ -80,8 +76,9 @@ public class ShatterRenderHandler {
         poseStack.scale(-1.0F, -1.0F, 1.0F);
         ((LivingEntityRendererAccessor<T, S, M>) entityRenderer).shatteredsouls$callScale(entityRenderState, poseStack);
         poseStack.translate(0F, -1.501F, 0F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(RenderPropertyKey.getRenderProperty(entityRenderState,
-                BODY_ROT_RENDER_PROPERTY_KEY)));
+        poseStack.mulPose(Axis.YP.rotationDegrees(RenderPropertyKey.getOrDefault(entityRenderState,
+                BODY_ROT_RENDER_PROPERTY_KEY,
+                0.0F)));
 
         EntityModelAdapter modelPartRenderer = MODEL_ADAPTERS.computeIfAbsent(entityRenderer,
                 ShatterRenderHandler::createModelAdapter);
