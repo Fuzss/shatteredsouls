@@ -7,6 +7,7 @@ import fuzs.shatteredsouls.config.ClientConfig;
 import fuzs.shatteredsouls.init.ModRegistry;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
@@ -21,8 +22,8 @@ public class MobDismembermentHandler {
 
         if (!ShatteredSouls.CONFIG.get(ClientConfig.class).bloodParticles) return EventResult.PASS;
 
-        if (!entity.level().isClientSide ||
-                ShatteredSouls.CONFIG.get(ClientConfig.class).bloodParticleBlacklist.contains(entity.getType())) {
+        if (!entity.level().isClientSide()
+                || ShatteredSouls.CONFIG.get(ClientConfig.class).bloodParticleBlacklist.contains(entity.getType())) {
             return EventResult.PASS;
         }
 
@@ -32,39 +33,40 @@ public class MobDismembermentHandler {
         return EventResult.PASS;
     }
 
-    private static void dismember(ClientLevel level, LivingEntity entity, boolean deathByExplosion) {
+    private static void dismember(ClientLevel clientLevel, LivingEntity livingEntity, boolean deathByExplosion) {
 
-        int particleAmount = (int) (Math.sqrt(entity.getBbWidth() * entity.getBbHeight()) * 50.0);
+        int particleAmount = (int) (Math.sqrt(livingEntity.getBbWidth() * livingEntity.getBbHeight()) * 50.0);
         if (deathByExplosion) particleAmount *= 10;
-        for (int k = 0; k < particleAmount + level.random.nextInt(particleAmount); k++) {
+        for (int k = 0; k < particleAmount + clientLevel.random.nextInt(particleAmount); k++) {
 
             float multiplier = 0.3F;
-            double motionX = -Mth.sin(entity.yBodyRotO / 180.0F * (float) Math.PI) *
-                    Mth.cos(entity.xRotO / 180.0F * (float) Math.PI) * multiplier;
-            double motionZ = Mth.cos(entity.yBodyRotO / 180.0F * (float) Math.PI) *
-                    Mth.cos(entity.xRotO / 180.0F * (float) Math.PI) * multiplier;
-            double motionY = -Mth.sin(entity.xRotO / 180.0F * (float) Math.PI) * multiplier + 0.1F;
+            double motionX = -Mth.sin(livingEntity.yBodyRotO / 180.0F * (float) Math.PI) * Mth.cos(
+                    livingEntity.xRotO / 180.0F * (float) Math.PI) * multiplier;
+            double motionZ = Mth.cos(livingEntity.yBodyRotO / 180.0F * (float) Math.PI) * Mth.cos(
+                    livingEntity.xRotO / 180.0F * (float) Math.PI) * multiplier;
+            double motionY = -Mth.sin(livingEntity.xRotO / 180.0F * (float) Math.PI) * multiplier + 0.1F;
 
             multiplier = 0.02F;
-            float var5 = entity.getRandom().nextFloat() * (float) Math.PI * 2.0F;
-            multiplier *= entity.getRandom().nextFloat();
+            float var5 = livingEntity.getRandom().nextFloat() * (float) Math.PI * 2.0F;
+            multiplier *= livingEntity.getRandom().nextFloat();
 
             motionX += Math.cos(var5) * (double) multiplier;
-            motionY += (entity.getRandom().nextFloat() - entity.getRandom().nextFloat()) * 0.1F;
+            motionY += (livingEntity.getRandom().nextFloat() - livingEntity.getRandom().nextFloat()) * 0.1F;
             motionZ += Math.sin(var5) * (double) multiplier;
 
-            Vec3 deltaMovement = entity.getDeltaMovement();
-            if (!entity.getType().is(EntityTypeTags.SKELETONS)) {
-                Particle particle = ClientParticleHelper.addParticle(level,
+            Vec3 deltaMovement = livingEntity.getDeltaMovement();
+            if (!livingEntity.getType().is(EntityTypeTags.SKELETONS)) {
+                Particle particle = ClientParticleHelper.addParticle(clientLevel,
                         ModRegistry.BLOOD_PARTICLE_TYPE.value(),
-                        entity.getX(),
-                        entity.getY() + 0.5D + (entity.getRandom().nextDouble() * 0.7D),
-                        entity.getZ(),
+                        livingEntity.getX(),
+                        livingEntity.getY() + 0.5D + (livingEntity.getRandom().nextDouble() * 0.7D),
+                        livingEntity.getZ(),
                         deltaMovement.x + motionX,
                         deltaMovement.y + motionY,
                         deltaMovement.z + motionZ);
-                if (particle != null && entity.getType().is(EntityTypeTags.UNDEAD)) {
-                    particle.setColor(1.0F, 1.0F, 0.0F);
+                if (particle instanceof SingleQuadParticle singleQuadParticle && livingEntity.getType()
+                        .is(EntityTypeTags.UNDEAD)) {
+                    singleQuadParticle.setColor(1.0F, 1.0F, 0.0F);
                 }
             }
         }

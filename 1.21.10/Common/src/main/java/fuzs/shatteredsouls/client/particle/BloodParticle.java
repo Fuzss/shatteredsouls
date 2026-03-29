@@ -1,13 +1,18 @@
 package fuzs.shatteredsouls.client.particle;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.*;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.RandomSource;
 
-public class BloodParticle extends TextureSheetParticle {
+public class BloodParticle extends SingleQuadParticle {
 
-    public BloodParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-        super(level, x, y, z, xSpeed, ySpeed, zSpeed);
+    public BloodParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite) {
+        super(level, x, y, z, xSpeed, ySpeed, zSpeed, sprite);
         this.gravity = 0.06F;
         this.setColor(1.0F, 0.0F, 0.0F);
         this.setPower(1.2F);
@@ -42,17 +47,15 @@ public class BloodParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
+    protected Layer getLayer() {
+        return Layer.OPAQUE;
     }
 
-    public record Provider(SpriteSet spriteSet) implements ParticleProvider<SimpleParticleType> {
+    public record Provider(SpriteSet sprites) implements ParticleProvider<SimpleParticleType> {
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            BloodParticle particle = new BloodParticle(level, x, y, z, xSpeed, ySpeed, zSpeed);
-            particle.pickSprite(this.spriteSet);
-            return particle;
+        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource randomSource) {
+            return new BloodParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, this.sprites.get(randomSource));
         }
     }
 }

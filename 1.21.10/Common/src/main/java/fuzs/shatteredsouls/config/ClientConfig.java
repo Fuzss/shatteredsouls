@@ -10,12 +10,15 @@ import net.minecraft.world.entity.EntityType;
 import java.util.List;
 
 public class ClientConfig implements ConfigCore {
-    @Config(name = "shatter_animation_blacklist", description = "Mobs that shall not use the new death animation, sticking to their vanilla behavior.")
-    List<String> shatterAnimationBlacklistRaw = KeyedValueProvider.toString(Registries.ENTITY_TYPE, EntityType.ENDER_DRAGON);
+    @Config(name = "shatter_animation_blacklist",
+            description = "Mobs that shall not use the new death animation, sticking to their vanilla behavior.")
+    List<String> shatterAnimationBlacklistRaw = KeyedValueProvider.asString(Registries.ENTITY_TYPE,
+            EntityType.ENDER_DRAGON);
     @Config(description = "Defeating a mob will spray out a bunch of blood particles.")
     public boolean bloodParticles = false;
-    @Config(name = "blood_particles_blacklist", description = "Mobs that do not create blood particles after being defeated.")
-    List<String> bloodParticlesBlacklistRaw = KeyedValueProvider.toString(Registries.ENTITY_TYPE);
+    @Config(name = "blood_particles_blacklist",
+            description = "Mobs that do not create blood particles after being defeated.")
+    List<String> bloodParticlesBlacklistRaw = KeyedValueProvider.asString(Registries.ENTITY_TYPE);
 
     public ConfigDataSet<EntityType<?>> shatterAnimationBlacklist;
     public ConfigDataSet<EntityType<?>> bloodParticleBlacklist;

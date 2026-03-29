@@ -5,10 +5,12 @@ import fuzs.shatteredsouls.ShatteredSouls;
 import fuzs.shatteredsouls.client.helper.ClientEntityData;
 import fuzs.shatteredsouls.config.ClientConfig;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 
 public class ShatterTickHandler {
@@ -18,17 +20,20 @@ public class ShatterTickHandler {
 
     public static EventResult onLivingDeath(LivingEntity entity, DamageSource source) {
 
-        if (!entity.level().isClientSide || ShatteredSouls.CONFIG.get(ClientConfig.class).shatterAnimationBlacklist.contains(entity.getType())) {
+        if (!entity.level().isClientSide()
+                || ShatteredSouls.CONFIG.get(ClientConfig.class).shatterAnimationBlacklist.contains(entity.getType())) {
             return EventResult.PASS;
         }
 
-        // add a delay to entities that are falling, during this delay vanilla is still allowed to tick the entity normally
-        // to hopefully have it reach the actual death position client-side to allow the death animation to play there.
-        // this mainly solves an issue with mobs dying from fall damage, where the mob is already dead, but is still falling on the client,
-        // resulting in the mob stopping and playing the death animation in the air above the actual death position.
-        entity.deathTime = entity.onGround() || BuiltInRegistries.FLUID.listTagIds().anyMatch(fluid -> entity.getFluidHeight(fluid) > 0.0) ? NOT_ON_GROUND_DELAY : 0;
+        // Add a delay to entities that are falling, during this delay vanilla is still allowed to tick the entity normally
+        // to hopefully have it reach the actual death position client-side, so the death animation may play there.
+        // This mainly solves an issue with mobs dying from fall damage, where the mob is already dead, but is still falling on the client.
+        // That results in the mob stopping and playing the death animation in the air above the actual death position.
+        entity.deathTime = entity.onGround() || BuiltInRegistries.FLUID.listTagIds().anyMatch((TagKey<Fluid> fluid) -> {
+            return entity.getFluidHeight(fluid) > 0.0;
+        }) ? NOT_ON_GROUND_DELAY : 0;
 
-        // enable no physics, so the death animation is not hindered by terrain
+        // Enable no physics, so terrain does not hinder the death animation.
         entity.noPhysics = true;
 
         ClientEntityData.submitEntity(entity);
@@ -38,7 +43,9 @@ public class ShatterTickHandler {
 
     public static EventResult onStartEntityTick(Entity entity) {
 
-        if (!entity.level().isClientSide || !(entity instanceof LivingEntity livingEntity) || !livingEntity.isDeadOrDying() || ShatteredSouls.CONFIG.get(ClientConfig.class).shatterAnimationBlacklist.contains(entity.getType())) {
+        if (!entity.level().isClientSide() || !(entity instanceof LivingEntity livingEntity)
+                || !livingEntity.isDeadOrDying()
+                || ShatteredSouls.CONFIG.get(ClientConfig.class).shatterAnimationBlacklist.contains(entity.getType())) {
             return EventResult.PASS;
         }
 
@@ -50,7 +57,8 @@ public class ShatterTickHandler {
             return EventResult.INTERRUPT;
         } else {
 
-            Vec3 deltaMovement = ClientEntityData.getAndUpdateDeltaMovement(livingEntity).multiply(DELTA_MOVEMENT_SCALE);
+            Vec3 deltaMovement = ClientEntityData.getAndUpdateDeltaMovement(livingEntity)
+                    .multiply(DELTA_MOVEMENT_SCALE);
 
             // just set this, should relate to rendering, but does not seem to have any noticeable effect, but just keep it for now
             entity.xo = entity.getX();

@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import fuzs.puzzleslib.api.client.renderer.v1.RenderPropertyKey;
+import fuzs.puzzleslib.api.client.renderer.v1.RenderStateExtraData;
 import fuzs.shatteredsouls.client.handler.ShatterRenderHandler;
 import fuzs.shatteredsouls.mixin.client.accessor.ModelPartAccessor;
 import net.minecraft.client.model.EntityModel;
@@ -42,7 +42,6 @@ public class EntityModelAdapter {
     }
 
     public void setupAndRenderModelParts(LivingEntityRenderState entityRenderState, PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, float animationProgress) {
-
         setupAndRenderModelParts(this.modelParts,
                 entityRenderState,
                 poseStack,
@@ -52,23 +51,22 @@ public class EntityModelAdapter {
     }
 
     protected static void setupAndRenderModelParts(Collection<ModelPart> modelParts, LivingEntityRenderState entityRenderState, PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, float animationProgress) {
-
         ModelPart[] parts = explodeModelParts(modelParts).toArray(ModelPart[]::new);
-        Vec3 deltaMovement = RenderPropertyKey.getOrDefault(entityRenderState,
+        Vec3 deltaMovement = RenderStateExtraData.getOrDefault(entityRenderState,
                 ShatterRenderHandler.DELTA_MOVEMENT_RENDER_PROPERTY_KEY,
                 Vec3.ZERO);
-        int entityId = RenderPropertyKey.getOrDefault(entityRenderState,
+        int entityId = RenderStateExtraData.getOrDefault(entityRenderState,
                 ShatterRenderHandler.ENTITY_ID_RENDER_PROPERTY_KEY,
                 0);
         float alpha = 1.0F - animationProgress;
-        RandomSource random = RANDOM;
+        RandomSource randomSource = RANDOM;
 
         for (int i = 0; i < parts.length; i++) {
 
             poseStack.pushPose();
 
-            random.setSeed((long) random.nextInt() * entityId * i * 1000);
-            setupRotations(poseStack, animationProgress, deltaMovement, random);
+            randomSource.setSeed((long) randomSource.nextInt() * entityId * i * 1000);
+            setupRotations(poseStack, animationProgress, deltaMovement, randomSource);
 
             ModelPart modelPart = parts[i];
             modelPart.translateAndRotate(poseStack);
@@ -127,12 +125,12 @@ public class EntityModelAdapter {
     private static void setupRotations(PoseStack poseStack, float animationProgress, Vec3 deltaMovement, RandomSource random) {
 
         double offsetX =
-                random.nextFloat() * (random.nextFloat() > 0.5F ? -1.0 : 1.0) * animationProgress * deltaMovement.z *
-                        5.0;
+                random.nextFloat() * (random.nextFloat() > 0.5F ? -1.0 : 1.0) * animationProgress * deltaMovement.z
+                        * 5.0;
         double offsetY = random.nextDouble() * animationProgress * (deltaMovement.y + (random.nextDouble() - 1.0));
         double offsetZ =
-                random.nextFloat() * (random.nextFloat() > 0.5F ? -1.0 : 1.0) * animationProgress * deltaMovement.x *
-                        5.0;
+                random.nextFloat() * (random.nextFloat() > 0.5F ? -1.0 : 1.0) * animationProgress * deltaMovement.x
+                        * 5.0;
         poseStack.translate(offsetX, offsetY, offsetZ);
 
         float rotationBase = 180.0F * random.nextFloat() * animationProgress;
